@@ -181,6 +181,7 @@
             WeekDays <- c(WeekDays, TRUE)
         }
     }
-    impData <- cbind( impData, WeekDays)
-    impData <- cbind( impData, WeekEnds)
+    impData <- cbind( impData, WeekDays )
+    impData <- cbind( impData, WeekEnds )
 ```
+###Steps on the Week Ends
