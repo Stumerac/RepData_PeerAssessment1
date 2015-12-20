@@ -1,28 +1,26 @@
 # Reproducible Research: Peer Assessment 1
 
 
-## Loading and preprocessing the data
-##     * read the data
-##     * create a list of days from the data set
+# Loading and preprocessing the data
+
+
 
 ```r
+    ## read the data
     rawData <- read.csv("activity.csv")
-
+    ## create a list of days from the data set
     days <- as.character(unique(rawData$date))
 ```
 
 
-## What is mean total number of steps taken per day?
-###Initialize the list of steps with the first day.
+# What is mean total number of steps taken per day?
 
 ```r
+   ###Initialize the list of steps with the first day.
     firstDay <- days[1]
     stepsList <- sum(subset(rawData$steps, rawData$date == firstDay, na.rm = T)) 
-```
-    
-###Add the remaining steps per day to the list.
 
-```r
+        ###Add the remaining steps per day to the list
     for( i in 2:length(days)) {
         day <- days[i]
         stepsList <- c(stepsList, sum(subset(rawData$steps, rawData$date == day), na.rm = T) )
@@ -32,10 +30,11 @@
 ###A histogram of steps per day 
 
 ```r
-    hist(stepsList)
+    hist(stepsList, xlab = "Step per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
 ###The mean of steps per day in the period
 
 ```r
@@ -56,30 +55,29 @@
 ```
 
 
-## What is the average daily activity pattern?
-###Initialize the list of mean steps in the first interval.
+# What is the average daily activity pattern?
+
 
 ```r
+    ###Initialize the list of mean steps in the first interval.
     intervals <- unique(as.character(rawData$interval))
     firstInterval <- intervals[1]
     meanStepsPerIntervalList <- mean(subset(rawData$steps, rawData$interval == firstInterval), na.rm = T) 
-```
-###Add the remaining means of steps per interval to the list.
 
-```r
+    ###Add the remaining means of steps per interval to the list.
     for( i in 2:length(intervals)) {
         interval <- intervals[i]
         meanStepsPerIntervalList <- c(meanStepsPerIntervalList, mean(subset(rawData$steps, rawData$interval == interval) , na.rm = T ) )
         
     }
 ```
-###plot
+###Mean number of steps per interval
 
 ```r
     plot(intervals, meanStepsPerIntervalList, type="l")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
 
 ###Max number of steps per interval on average
 
@@ -93,7 +91,7 @@
 ```
 ## [1] "835"
 ```
-## Imputing missing values
+# Imputing missing values
 ### Total number of NA rows
 
 ```r
@@ -106,10 +104,11 @@
 ### Impute missing values with the mean of steps during the given interval
 
 ```r
+    # Add the first imputed value to the mean by interval table. 
     firstImpute <- as.numeric( IntervalMeanTable[1,2] )
     impData <- rawData[1,]
     impData[1,1] <- firstImpute
-    
+    # Add remaining imputed values if # of steps are NA in the given interval
     for ( i in 2:dim( rawData )[1]  ) {
         impData[i,] <- rawData[i,]
         if(is.na( rawData[i,1]  ) )  {
@@ -119,30 +118,26 @@
         }
     }
 ```
-### Histogram of data with imputed values included
-###Initialize the list of steps with the first day.
+### Histogram of steps per day with imputed values included
+
 
 ```r
+    ###Initialize the list of steps with the first day.
     firstDay <- days[1]
     stepsList <- sum(subset(as.numeric(impData$steps), impData$date == firstDay, na.rm = T)) 
-```
-    
-###Add the remaining steps per day to the list.
 
-```r
+    ###Add the remaining steps per day to the list.
     for( i in 2:length(days)) {
         day <- days[i]
         stepsList <- c(stepsList, sum(subset(as.numeric(impData$steps), impData$date == day), na.rm = T) )
     
     }
-```
-###A histogram of steps per day 
 
-```r
-    hist(stepsList)
+    hist(stepsList, xlab = "Steps per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-15-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+
 ###The mean of steps per day in the period
 
 ```r
@@ -164,13 +159,15 @@
 
 ### Adding the imputed values increases the number of days with steps between 10,000 and 15,000 a great deal.  It also reduces the number of days with steps from 0 to 5,000 down to 5 instances.  The mean and median numbers of steps per day do not change significantly.
 
-## Are there differences in activity patterns between weekdays and weekends?
+# Are there differences in activity patterns between weekdays and weekends?
 ###Add logical columns for week ends and week days
 
 ```r
     WeekDays <- NULL
     WeekEnds <- NULL
-    
+    ##Add TRUE to the WeekEnds list if the given day is Saturday or Sunday.  Also add
+    ## FALSE to the WeekDays list in this case.  Do the opposite if the given day is 
+    ## Monday through Friday
     for ( i in 1:dim(impData)[1] ) {
         if( weekdays( as.Date( impData[i,2] ) ) == "Saturday" || weekdays( as.Date( impData[i,2] ) ) == "Sunday" ) {
             WeekEnds <- c(WeekEnds, TRUE)
@@ -181,7 +178,9 @@
             WeekDays <- c(WeekDays, TRUE)
         }
     }
+    #Add WeekDays and WeekEnds logical lists to the imputed data frame
     impData <- cbind( impData, WeekDays )
     impData <- cbind( impData, WeekEnds )
 ```
 ###Steps on the Week Ends
+
